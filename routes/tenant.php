@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
+use App\Notifications\TestNotification;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -24,9 +26,15 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     Route::get('/', function () {
+
+        /** @var User $user */
+        $user = User::query()->first();
+        $user->notify(new TestNotification());
+
+
         return [
             'tenant' => tenant(),
-            'users'  => \App\Models\User::all(),
+            'users'  => User::all(),
         ];
     });
 });
